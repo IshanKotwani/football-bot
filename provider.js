@@ -4,8 +4,7 @@ import OpenAI from "openai";
 // Both providers speak the OpenAI wire format, so one client library serves both
 // and only the connection details differ. PROVIDER in .env picks between them.
 export const PROVIDERS = {
-  // Sarvam AI — Indian provider, billed in INR from prepaid credits.
-  // Auth is a custom header rather than the usual Authorization: Bearer.
+  // Sarvam AI. Auth is a custom header rather than the usual Authorization: Bearer.
   sarvam: {
     baseURL: "https://api.sarvam.ai/v1",
     model: "sarvam-105b-conversations",
@@ -19,7 +18,7 @@ export const PROVIDERS = {
 that — you have been observed placing players at clubs they left years earlier.
 You cannot browse or look anything up.`,
   },
-  // AICredits — reseller gateway fronting Anthropic's models.
+  // AICredits — OpenAI-compatible gateway serving Anthropic models.
   aicredits: {
     baseURL: "https://api.aicredits.in/v1",
     model: "anthropic/claude-haiku-4-5",

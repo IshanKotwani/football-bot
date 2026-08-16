@@ -24,13 +24,15 @@ table; `PROVIDER` in `.env` selects a row.
 
 | `PROVIDER`  | Endpoint                      | Default model                 | Key var             |
 | ----------- | ----------------------------- | ----------------------------- | ------------------- |
-| `sarvam`    | `https://api.sarvam.ai/v1`    | `sarvam-105b-conversations`   | `SARVAM_API_KEY`    |
 | `aicredits` | `https://api.aicredits.in/v1` | `anthropic/claude-haiku-4-5`  | `ANTHROPIC_API_KEY` |
+| `sarvam`    | `https://api.sarvam.ai/v1`    | `sarvam-105b-conversations`   | `SARVAM_API_KEY`    |
 
-Default is `sarvam`. The whole arrangement exists because of one constraint: the user
-is in India and cannot fund USD-billed API credits, so every backend here must be
-payable in INR. Do not "simplify" this by switching to `@anthropic-ai/sdk` and a
-first-party Anthropic key — that path is closed.
+Default is `aicredits`, which tested markedly better on European club football;
+Sarvam is stronger on Indian-language conversation. Both are reached over
+OpenAI-compatible HTTP rather than a vendor SDK, and that is a deliberate
+constraint — **do not port this to `@anthropic-ai/sdk`**. Anthropic-native request
+options do not exist on these endpoints, and swapping the client would break both
+providers to serve neither.
 
 Per-provider quirks worth knowing before editing `provider.js`:
 
