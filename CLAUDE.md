@@ -24,15 +24,21 @@ table; `PROVIDER` in `.env` selects a row.
 
 | `PROVIDER`  | Endpoint                      | Default model                 | Key var             |
 | ----------- | ----------------------------- | ----------------------------- | ------------------- |
-| `aicredits` | `https://api.aicredits.in/v1` | `anthropic/claude-haiku-4-5`  | `ANTHROPIC_API_KEY` |
+| `aicredits` | `https://api.aicredits.in/v1` | `x-ai/grok-4.5`               | `ANTHROPIC_API_KEY` |
 | `sarvam`    | `https://api.sarvam.ai/v1`    | `sarvam-105b-conversations`   | `SARVAM_API_KEY`    |
 
 Default is `aicredits`, which tested markedly better on European club football;
-Sarvam is stronger on Indian-language conversation. Both are reached over
+Sarvam is stronger on Indian-language conversation. That comparison was made
+against the gateway's earlier default, `anthropic/claude-haiku-4-5`, and has not
+been re-run since the default moved to Grok. Both are reached over
 OpenAI-compatible HTTP rather than a vendor SDK, and that is a deliberate
-constraint — **do not port this to `@anthropic-ai/sdk`**. Anthropic-native request
-options do not exist on these endpoints, and swapping the client would break both
-providers to serve neither.
+constraint — **do not port this to a vendor SDK**. Vendor-native request options do
+not exist on these endpoints, and swapping the client would break both providers to
+serve neither.
+
+`ANTHROPIC_API_KEY` is the AICredits *gateway* key and is named for the vendor the
+gateway was first used for. It is not Anthropic-specific and is unrelated to which
+model `MODEL` selects — renaming it would break every existing `.env`.
 
 Per-provider quirks worth knowing before editing `provider.js`:
 
@@ -49,10 +55,21 @@ Per-provider quirks worth knowing before editing `provider.js`:
 - **`sarvam-105b-conversations` opens replies with a stray newline.** The stream loop
   strips leading whitespace until the first real character, so it never reaches the
   UI as a blank first line.
-- **AICredits namespaces model IDs** as `anthropic/<model>`. That prefix is the
-  gateway's convention, not part of the model name — do not strip it.
-- **Anthropic-native parameters are unavailable on both.** No `output_config.effort`,
+- **AICredits namespaces model IDs** as `<vendor>/<model>` — `x-ai/grok-4.5`,
+  `anthropic/claude-sonnet-5`, `z-ai/glm-5.2`. That prefix is the gateway's
+  convention, not part of the model name — do not strip it.
+- **The gateway resolves some ID aliases that `/models` does not list.** Both
+  `anthropic/claude-haiku-4-5` and `anthropic/claude-haiku-4.5` return 200 though
+  only the dotted form appears in the catalogue. `npm run models` compares by exact
+  string, so it can warn about a `MODEL` that in fact works. An unavailable ID is
+  unambiguous — a 404 with `code: "model_not_found"`.
+- **Vendor-native parameters are unavailable on both.** No `output_config.effort`,
   no adaptive-thinking config, no server-side `fallbacks`, no `stop_reason: "refusal"`.
+- **Not every gateway model can drive the tool loop.** Function calling is required
+  for live football data; the roleplay and embedding entries in the catalogue have
+  none. A model without it does not error — it silently answers from memory, the
+  same degradation as a missing `FOOTBALL_DATA_TOKEN`. Probe a candidate with a
+  `tools` payload before switching `MODEL` to it.
 - `BASE_URL` and `MODEL` in `.env` override the table, which is also how a local
   Ollama instance can be substituted for offline use.
 

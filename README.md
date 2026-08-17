@@ -49,11 +49,16 @@ only client library and switching providers is a one-line `.env` change.
 
 | `PROVIDER`  | Endpoint                      | Default model                |
 | ----------- | ----------------------------- | ---------------------------- |
-| `aicredits` | `https://api.aicredits.in/v1` | `anthropic/claude-haiku-4-5` |
+| `aicredits` | `https://api.aicredits.in/v1` | `x-ai/grok-4.5`              |
 | `sarvam`    | `https://api.sarvam.ai/v1`    | `sarvam-105b-conversations`  |
 
 Default is `aicredits`, which tested noticeably stronger on European club football.
 Sarvam is the better choice for Indian-language conversation.
+
+AICredits is a gateway rather than a single vendor, so `MODEL` can point at any ID
+in its catalogue — `npm run models` lists the ones your key can reach. Live football
+data needs a model that supports function calling; one without it will still answer,
+just from memory rather than from the API.
 
 Point `BASE_URL` at any other OpenAI-compatible endpoint — including a local Ollama
 instance at `http://localhost:11434/v1` — and the rest of the app is unchanged.

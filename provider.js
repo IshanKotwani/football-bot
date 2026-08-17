@@ -18,10 +18,10 @@ export const PROVIDERS = {
 that — you have been observed placing players at clubs they left years earlier.
 You cannot browse or look anything up.`,
   },
-  // AICredits — OpenAI-compatible gateway serving Anthropic models.
+  // AICredits — OpenAI-compatible gateway fronting many vendors' models.
   aicredits: {
     baseURL: "https://api.aicredits.in/v1",
-    model: "anthropic/claude-haiku-4-5",
+    model: "x-ai/grok-4.5",
     keyVar: "ANTHROPIC_API_KEY",
     headers: () => ({}),
     maxTokens: 4096,
